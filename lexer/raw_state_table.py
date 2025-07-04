@@ -13,15 +13,15 @@ class CharClasses(Enum):
     zero = auto()
     speech_mark = auto()
 
-transiton_classes = {CharClasses.letters_: set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"),
-                      CharClasses.digits: set(str(i) for i in range(0,10)),
-                      CharClasses.ascii: set(chr(i) for i in range(128)),
-                      CharClasses.digits_not_0: set(str(i) for i in range(1,10)),
-                      CharClasses.op: set("+-*/=><|&!%"),
-                      CharClasses.punctuation: set("();:,[]{}"),
-                      CharClasses.whitespace: set(" \n\t\r"),
+transiton_classes = {CharClasses.letters_: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_",
+                      CharClasses.digits: ''.join(str(i) for i in range(10)),
+                      CharClasses.ascii: ''.join(chr(i) for i in range(128)),
+                      CharClasses.digits_not_0: ''.join(str(i) for i in range(1,10)),
+                      CharClasses.op: "+-*/=><|&!%",
+                      CharClasses.punctuation: "();:,[]{}",
+                      CharClasses.whitespace: " \n\t\r",
                       CharClasses.dot: ".",
-                      CharClasses.zero: str(""),
+                      CharClasses.zero: "0",
                       CharClasses.speech_mark: "\""
 }
 
