@@ -54,6 +54,49 @@ whitespace -> [ |\t|\n|\r]
 ```
 #### NFA
 #### Subset Construction/DFA
+```
+S1 = {1, 10, 11}
+
+δ(S1, letters_) = S2 = {2, 3, 4, 6, 9}
+δ(S1, digits_not_0) = S3 = {12, 14, 16, 17, 18, 21}
+δ(S1, 0) = S4 = {13, 17, 18, 21}
+δ(S1, ") = S5 = {22, 23, 25}
+δ(S1, op) = S6 = {27}
+δ(S1, punctuation) = S7 = {28}
+δ(S1, whitespace) = S8 = {29}
+
+δ(S2, letters_) = S9 = {5, 8, 3, 4, 6, 9}
+δ(S2, digits) = S10 = {7, 8, 3, 4, 6, 9}
+
+δ(S3, digits) = S11 = {15, 14, 16, 17, 18, 21}
+δ(S3, .) = S12 = {19}
+
+δ(S4, .) = S13 = S12
+
+δ(S5, ascii) = S13 = {24, 23, 25}
+δ(S5, ") = S14 = {26}
+
+δ(S9, letters_) = S9 
+δ(S9, digits) = S10 
+
+δ(S10, letters_) = S9 
+δ(S10, digits) = S10 
+
+δ(S11, digits) = S11
+δ(S11, .) = S12 
+
+δ(S12, digits) = S15 = {20, 19, 21} 
+
+δ(S13, ascii) = S13
+δ(S13, ") = S14
+
+δ(S15, digits) = S15
+```
+
+
+
+
+
 
 ### Lexing Logic and State Table Construction
 
