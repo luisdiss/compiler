@@ -2,6 +2,8 @@
 
 This repository documents my progress in building a compiler from scratch. It's purpose is to increase my understanding of compiler technology and exhibit my technical skills. The compiler implements a high level procedural programming language. It supports a minimal set programming constructs like loops, functions, conditionals, variable assignment, types and more.
 
+So far, only the lexer has been finished
+
 ## Lexer
 
 ### Regular Expressions
@@ -14,15 +16,15 @@ The design process starts by writing regular expressions which are capable of ex
 Converting these regular expressions to NFA resulted in unmanageable complexity due to the combinatorial explosion of branching as a result of using raw regular expressions. I decided to use character classes defined in regular defintions as transitions in the NFA. This choice reduces the complexity of the NFA but requires us to resolve which character belongs to which transition (you will see later that I chose to resolve this by preprocessing the state table). 
 
 
-### Converting the NFA into a deterministic finite automaton (DFA) by subset construction
+### Converting the NFA into a Deterministic Finite Automaton (DFA) by Subset Construction
 
 By finding the epsilon colsure of each transtion in the NFA we can generate a DFA. I do this recursively until all states transiton to a state thats already been defined in the DFA.
 
 
 ### Prototyping the Lexer 
 
-I learned three things from prototyping the lexer 
-1. keywords should be recognised as IDs and checked against hardcoded keywords
+I learned three things from prototyping the lexer.
+1. keywords should be recognised as IDs and checked against hardcoded keywords.
 2. The state table should be processed to flatten the transition classes into individual characters
 3. Use disjoint character classes on the first state of the combined NFA (this is possible because of 1.)
 
