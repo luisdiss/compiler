@@ -53,51 +53,49 @@ punctuatuon -> [(|)|;|:|,|[|]|{|}]
 whitespace -> [ |\t|\n|\r]
 ```
 #### NFA
+
+<img src="assets/NFA.png" alt="assets/NFA.png" width="400"/>
+
 #### Subset Construction/DFA
+
 ```
-S1 = {1, 10, 11}
+S1 = {1, 10, 11}  
 
-δ(S1, letters_) = S2 = {2, 3, 4, 6, 9}
-δ(S1, digits_not_0) = S3 = {12, 14, 16, 17, 18, 21}
-δ(S1, 0) = S4 = {13, 17, 18, 21}
-δ(S1, ") = S5 = {22, 23, 25}
-δ(S1, op) = S6 = {27}
-δ(S1, punctuation) = S7 = {28}
-δ(S1, whitespace) = S8 = {29}
+δ(S1, letters_) = S2 = {2, 3, 4, 6, 9}  
+δ(S1, digits_not_0) = S3 = {12, 14, 16, 17, 18, 21}  
+δ(S1, 0) = S4 = {13, 17, 18, 21}  
+δ(S1, ") = S5 = {22, 23, 25}  
+δ(S1, op) = S6 = {27}  
+δ(S1, punctuation) = S7 = {28}  
+δ(S1, whitespace) = S8 = {29}  
 
-δ(S2, letters_) = S9 = {5, 8, 3, 4, 6, 9}
-δ(S2, digits) = S10 = {7, 8, 3, 4, 6, 9}
+δ(S2, letters_) = S9 = {5, 8, 3, 4, 6, 9}  
+δ(S2, digits) = S10 = {7, 8, 3, 4, 6, 9}  
 
-δ(S3, digits) = S11 = {15, 14, 16, 17, 18, 21}
-δ(S3, .) = S12 = {19}
+δ(S3, digits) = S11 = {15, 14, 16, 17, 18, 21}  
+δ(S3, .) = S12 = {19}  
 
-δ(S4, .) = S13 = S12
+δ(S4, .) = S13 = S12  
 
-δ(S5, ascii) = S13 = {24, 23, 25}
-δ(S5, ") = S14 = {26}
+δ(S5, ascii) = S13 = {24, 23, 25}  
+δ(S5, ") = S14 = {26}  
 
-δ(S9, letters_) = S9 
-δ(S9, digits) = S10 
+δ(S9, letters_) = S9   
+δ(S9, digits) = S10  
 
-δ(S10, letters_) = S9 
-δ(S10, digits) = S10 
+δ(S10, letters_) = S9   
+δ(S10, digits) = S10  
 
-δ(S11, digits) = S11
-δ(S11, .) = S12 
+δ(S11, digits) = S11  
+δ(S11, .) = S12  
 
-δ(S12, digits) = S15 = {20, 19, 21} 
+δ(S12, digits) = S15 = {20, 19, 21}  
 
-δ(S13, ascii) = S13
-δ(S13, ") = S14
+δ(S13, ascii) = S13  
+δ(S13, ") = S14  
 
-δ(S15, digits) = S15
+δ(S15, digits) = S15  
 ```
-
-
-
-
-
-
 ### Lexing Logic and State Table Construction
 
 The `raw_state_table` is implemented as a nested dictionary in `raw_state_table.py` allowing it to be accessed with meaninful names in constant time on average.  This results in a data structure that is readable and efficient. Rather than hardcoding the transition classes at each state, I use a separate dictionary, `transition_classes`, to encapsulate them. The values of of the transition classes are implemented as strings for fast iteration. An Enum is used for the transition class keys to encapsulate key definitions which increases maintainability and reduces errors from mispelled/invalid keys. The `lexer` code is designed to be as clean as possible and lives in `lexer.py`. It loops through all characters in the input following the transitions defined in the state table. I used the `.get` method to look up the next state, which returns gracefully if there is no transition in the current state matching the current character. If it transitions to another state, it tries to access the the type of token accepeted at this state. If this state is not accepting, `.get` returns None and it loops. This process continues until there are no transitions left to make. If we have encoutered an accepting state, we create and store the token and reset the state variables to process the rest of the input.
