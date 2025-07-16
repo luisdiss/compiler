@@ -1,5 +1,5 @@
-from token_utils import create_token
-from flattened_state_table import flattened_state_table as state_table
+from compiler.lexer.token_utils import create_token
+from compiler.lexer.flattened_state_table import flattened_state_table as state_table
 
 s = "shshshs if * *& {} % lalalals"
     

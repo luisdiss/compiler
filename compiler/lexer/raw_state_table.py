@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from token_utils import TokenTypes
+from compiler.lexer.token_utils import TokenTypes
 
 class CharClasses(Enum):
     letters_ = auto()

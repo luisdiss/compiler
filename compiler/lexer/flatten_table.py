@@ -1,4 +1,4 @@
-from raw_state_table import raw_state_table, transiton_classes
+from compiler.lexer.raw_state_table import raw_state_table, transiton_classes
 import pprint
 
 def flatten_state_table(state_table):
