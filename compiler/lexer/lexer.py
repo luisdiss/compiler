@@ -1,8 +1,6 @@
 from compiler.lexer.token_utils import create_token
 from compiler.lexer.flattened_state_table import flattened_state_table as state_table
 
-s = "shshshs if * *& {} % lalalals"
-    
 def lexer(s):
     state, i, tokens, accepted_token_type, buffer = "S1", 0, [], "", ""
     while i < len(s):
@@ -25,6 +23,4 @@ def lexer(s):
         if accepted_token_type:
             create_token(accepted_token_type, buffer, tokens)
     return tokens
-
-print(lexer(s))
 
