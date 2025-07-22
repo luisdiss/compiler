@@ -10,13 +10,13 @@ class TokenTypes(Enum):
     whitespace = auto()
 
 def is_keyword(word):
-    keywords = set(["for", "while", "break", "ret", "def", "in", "if", "elif", "else", "int", "flo", "str"])
+    keywords = set(["func", "struct", "if", "elif", "else", "self", "gt", "lt", "ge", "le", "eq"])
     if word in keywords:
         return True
 
 def create_token(token_type, token_value, tokens):
-    if token_type == TokenTypes.ID.value and is_keyword(token_value):
-        tokens.append((TokenTypes.keyword.value, token_value))
+    if (token_type == TokenTypes.ID.value and is_keyword(token_value)) or token_type == TokenTypes.op.value or token_type == TokenTypes.punctuation.value:
+        tokens.append((token_value, token_value))
     elif token_type == TokenTypes.whitespace.value:
         pass
     else:
