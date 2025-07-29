@@ -10,7 +10,7 @@ class TokenTypes(Enum):
     whitespace = auto()
 
 def is_keyword(word):
-    keywords = set(["func", "struct", "if", "elif", "else", "self", "gt", "lt", "ge", "le", "eq"])
+    keywords = set(["func", "struct", "if", "elif", "else", "self", "gt", "lt", "ge", "le", "eq", "return"])
     if word in keywords:
         return True
 
