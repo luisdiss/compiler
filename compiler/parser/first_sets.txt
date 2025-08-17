@@ -1,0 +1,65 @@
+We can complete first sets fairly easily by looking at the grammar and for each production following all chains of derivations until we reach terminals that can start the string derived by the head of a particular production. The necessary chains of derivation that need to be computed are described in the following rules:
+
+1) For X -> Y1Y2Y3...Yk, if ε ∈ Yi for i=[1...i-1] , then first(Yi) ⊆ first(X).
+2) If ε ∈ all Y productions for a given X, then ε ∈ first(X)
+3) If X -> ε is a production, then ε is in first(X)
+
+The job can be made even easier by working on the productions that have shallow derivations first. There is a algortihm in the dragon book to compute first sets but the above way will work so long as you can follow the chains of derivation mentally.
+
+First Sets:
+
+P FUNC, +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, ε
+StmtList FUNC, +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, ε
+Stmt FUNC, +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF
+
+FuncDef FUNC
+FuncBody +, -, (, NUMBER, STRING, ID, CALL, FUNC, RETURN, IF, ASSIGN, ε
+FuncEntry +, -, (, NUMBER, STRING, ID, CALL, FUNC, RETURN, ASSIGN, IF
+
+Params ID ASSIGN, ε
+ParamList ID
+ParamListRest ,, ε
+KeyWordParamListTail |, ε
+KeyWordParamListTailRest ,, ε
+KeyWordParamList ASSIGN
+KeyWordParamListRest ,, ε
+Param ID
+KeyWordParam ASSIGN
+
+Assign ASSIGN
+
+Expr +, -, (, NUMBER, STRING, ID, CALL
+ExprRest +, -, ε
+--------------
+Term +, -, (, NUMBER, STRING, ID, CALL
+TermRest *, /, ε
+--------------
+Factor +, -, (, NUMBER, STRING, ID, CALL 
+--------------
+UnaryOp +, -
+AddOp +, -
+MultOp *, /
+Atom NUMBER, STRING, ID, CALL
+
+Conditional IF
+ConditionalRest ELSE ε
+--------------
+Comparsion +, -, (, NUMBER, STRING, ID, CALL, TRUE, FALSE
+ComparisonTail GT, LT, GE, LE, EQ, NE, ε
+CompOp GT, LT, GE, LE, EQ, NE
+Bool TRUE, FALSE
+--------------
+ConditionalBody +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, ε
+ConditionalEntry +, -, (, NUMBER, STRING, ID, CALL, ASSIGN
+
+Call CALL
+
+Args +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, ε
+ArgList +, -, (, NUMBER, STRING, ID, CALL
+ArgListRest ,, ε
+KeyWordArgListTail |, ε
+KeyWordArgListTailRest ,, ε
+KeyWordArgList ASSIGN
+KeyWordArgListRest ,, ε
+Arg +, -, (, NUMBER, STRING, ID, CALL
+KeyWordArg  ASSIGN

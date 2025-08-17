@@ -1,0 +1,65 @@
+For follow sets, we can make our way through each production and for each alternative we can check the following things. Make two list: DONE and NOT DONE work on the follow sets which can be completed now i.e. if a particalur follow set is the superset of another then the other follow set should be complete. One all occurences of a particular nonterminal have been worked through then it can go in the DONE list
+
+1)For S $ belongs to follow(S)
+2)If the next grammar symbol is a terminal then this terminal belongs in our follow set. If it is a nonterminal then all terminals in the first set of said non terminal is in our follow set (apart from epsilon).
+3)If the production is of the form A -> a B, or A -> a B c where c =>* ε, then follow(A) ⊆ follow(B).
+
+DONE
+
+P $
+StmtList $
+Stmt +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $
+
+FuncDef +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, RETURN, }
+FuncBody }
+FuncEntry +, -, (, NUMBER, STRING, ID, CALL, FUNC, RETURN, IF, ASSIGN, }
+
+Params )
+ParamList |, )
+ParamListRest |, )
+KeyWordParamListTail )
+KeyWordParamListTailRest )
+KeyWordParamList )
+KeyWordParamListRest )
+Param ,, |, )
+KeyWordParam ,, )
+
+Assign +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, RETURN, }, ,, )
+
+Expr +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, |, RETURN, }, ,, ), GT, LT, GE, LE, EQ, NE, {
+ExprRest +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, |, RETURN, }, ,, ), GT, LT, GE, LE, EQ, NE, {
+--------------
+Term +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, |, RETURN, }, ,, ), GT, LT, GE, LE, EQ, NE, {
+TermRest +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, |, RETURN, }, ,, ), GT, LT, GE, LE, EQ, NE, {
+Factor *, /, +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, |, RETURN, }, ,, ), GT, LT, GE, LE, EQ, NE, {
+--------------
+UnaryOp +, -, (, NUMBER, STRING, ID, CALL
+AddOp +, -, (, NUMBER, STRING, ID, CALL
+MultOp +, -, (, NUMBER, STRING, ID, CALL
+Atom *, /, +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, |, RETURN, }, ,, ), GT, LT, GE, LE, EQ, NE, {
+
+Conditional +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, RETURN, }
+ConditionalRest +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, RETURN, }
+----------------
+Comparsion {
+ComparisonTail {
+CompOp +, -, (, NUMBER, STRING, ID, CALL
+Bool {
+----------------
+ConditionalEntry +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, }
+ConditionalBody }
+
+Call *, /, +, -, (, NUMBER, STRING, ID, CALL, ASSIGN, IF, $, FUNC, |, RETURN, }, ,, ), GT, LT, GE, LE, EQ, NE, {
+
+Args )
+ArgList |, )
+ArgListRest |, )
+KeyWordArgListTail )
+KeyWordArgListTailRest )
+KeyWordArgList )
+KeyWordArgListRest )
+Arg ,, |, )
+KeyWordArg ,, )
+
+
+NOT DONE

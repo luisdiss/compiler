@@ -1,0 +1,58 @@
+P        -> StmtList
+StmtList -> Stmt StmtList | ε
+Stmt     -> FuncDef | Expr | Assign | Conditional
+
+FuncDef      -> FUNC ID ( Params ) { FuncBody }
+FuncBody     -> FuncEntry FuncBody | ε
+FuncEntry    -> Expr | FuncDef | RETURN Expr | Assign | Conditional 
+
+Params                   -> ParamList KeyWordParamListTail | KeyWordParamList | ε
+ParamList                -> Param ParamListRest
+ParamListRest            -> , Param ParamListRest | ε
+KeyWordParamListTail     -> | KeyWordParam KeyWordParamListTailRest | ε
+KeyWordParamListTailRest -> , KeyWordParam KeyWordParamListTailRest | ε
+KeyWordParamList         -> KeyWordParam KeyWordParamListRest
+KeyWordParamListRest     -> , KeyWordParam KeyWordParamListRest | ε
+Param                    -> ID
+KeyWordParam             -> Assign
+
+Assign -> ASSIGN ID = Expr
+
+Expr            -> Term ExprRest
+#ExprRest is not strictly ll(1) because ExprRest =>* ε, and first(AddOp) and follow(ExprRest) are not disjoint. I get around this by forcing the parse table to only have one entry for + and - which restricts the the syntax of the language but in a predictable way.
+ExprRest        -> AddOp Term ExprRest | ε
+--------------
+Term            -> Factor TermRest
+TermRest        -> MultOp Factor TermRest | ε
+Factor          -> UnaryOp Factor | ( Expr ) | Atom
+--------------
+UnaryOp         -> + | -
+AddOp           -> + | -
+MultOp          -> * | /
+Atom            -> NUMBER | STRING | ID | Call
+
+Conditional         -> IF Comparison { ConditionalBody } 
+ConditionalRest     -> ELSE { ConditionalBody } | ε
+--------------
+Comparsion          -> Expr ComparisonTail | Bool
+ComparisonTail      -> CompOp Expr ComparisonTail | ε
+CompOp              -> GT | LT | GE | LE | EQ | NE
+Bool                -> TRUE | FALSE
+--------------
+ConditionalBody     -> ConditionalEntry ConditionalBody | ε
+ConditionalEntry    -> Expr | Assign
+
+Call -> CALL ID ( Args )
+
+Args                   -> ArgList KeyWordArgListTail | KeyWordArgList | ε
+ArgList                -> Arg ArgListRest
+ArgListRest            -> , Arg ArgListRest | ε 
+KeyWordArgListTail     -> | KeyWordArg KeyWordArgListTailRest | ε
+KeyWordArgListTailRest -> , KeyWordArg KeyWordArgListTailRest | ε
+KeyWordArgList         -> KeyWordArg KeyWordArgListRest
+KeyWordArgListRest     -> , KeyWordArg KeyWordArgListRest | ε
+Arg                    -> Expr
+KeyWordArg             -> Assign
+
+
+
