@@ -1,8 +1,9 @@
-For follow sets, we can make our way through each production and for each alternative we can check the following things. Make two list: DONE and NOT DONE work on the follow sets which can be completed now i.e. if a particalur follow set is the superset of another then the other follow set should be complete. One all occurences of a particular nonterminal have been worked through then it can go in the DONE list
+To produce the follow sets, first we add $ to follow(S), where S is the start symbol. Then for all non terminals A, we apply the following rules for all occurences of A. 
 
-1)For S $ belongs to follow(S)
-2)If the next grammar symbol is a terminal then this terminal belongs in our follow set. If it is a nonterminal then all terminals in the first set of said non terminal is in our follow set (apart from epsilon).
-3)If the production is of the form A -> a B, or A -> a B c where c =>* ε, then follow(A) ⊆ follow(B).
+1) If there is a production of the form B -> a A c, then all terminals in first(c) are in follow(A) (apart from epsilon).
+2) If the production is of the form B -> a A, or B -> a A c where c =>* ε, then all terminals in follow(B) are in follow(A).
+
+Tip: Make two lists – DONE and NOT DONE and put all follow sets under NOT DONE. Move follow(A) to DONE after rule 1 and 2 have been applied to all instances of A.
 
 DONE
 

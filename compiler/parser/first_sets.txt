@@ -1,10 +1,10 @@
-We can complete first sets fairly easily by looking at the grammar and for each production following all chains of derivations until we reach terminals that can start the string derived by the head of a particular production. The necessary chains of derivation that need to be computed are described in the following rules:
+We can construct first sets by applying the following rules to all grammar productions:
 
 1) For X -> Y1Y2Y3...Yk, if ε ∈ Yi for i=[1...i-1] , then first(Yi) ⊆ first(X).
 2) If ε ∈ all Y productions for a given X, then ε ∈ first(X)
 3) If X -> ε is a production, then ε is in first(X)
 
-The job can be made even easier by working on the productions that have shallow derivations first. There is a algortihm in the dragon book to compute first sets but the above way will work so long as you can follow the chains of derivation mentally.
+Tip: work on the productions that have shallow derivations first.
 
 First Sets:
 
