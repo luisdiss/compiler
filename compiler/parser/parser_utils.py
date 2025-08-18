@@ -7,9 +7,9 @@ class GrammarProductions(Enum):
     StmtList = auto()
     Stmt = auto()
 
-    funcDef = auto()
-    funcBody = auto()
-    funcEntry = auto()
+    FuncDef = auto()
+    FuncBody = auto()
+    FuncEntry = auto()
 
     Params = auto()
     ParamList = auto()
@@ -21,7 +21,7 @@ class GrammarProductions(Enum):
     Param = auto()
     KeyWordParam = auto()
 
-    assign = auto()
+    Assign = auto()
 
     Expr = auto()
     ExprRest = auto()
@@ -42,7 +42,7 @@ class GrammarProductions(Enum):
     ConditionalBody = auto()
     Conditionalentry = auto()
 
-    call = auto()
+    Call = auto()
 
     Args = auto()
     ArgList = auto()
@@ -61,7 +61,6 @@ class Node:
         self.children = []
     
 def print_children(node, space=' '):
-    if node.children:
-        for i in node.children:
-            print(f"{space}({i.symbol}: {i.value})")
-            print_children(i, space=space+' ')
+    print(f"{space}({node.symbol}: {node.value})")
+    for child in node.children:
+        print_children(child, space=space+' ')
