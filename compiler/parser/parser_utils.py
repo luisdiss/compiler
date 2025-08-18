@@ -61,7 +61,6 @@ class Node:
         self.children = []
     
 def print_children(node, space=' '):
-    if node.children:
-        for i in node.children:
-            print(f"{space}({i.symbol}: {i.value})")
-            print_children(i, space=space+' ')
+    print(f"{space}({node.symbol}: {node.value})")
+    for child in node.children:
+        print_children(child, space=space+' ')
