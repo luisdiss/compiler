@@ -30,7 +30,7 @@ parse_table = {
         '$': []
     },
     GrammarProductions.Stmt: {
-        'func': [GrammarProductions.funcDef],
+        'func': [GrammarProductions.FuncDef],
         '+': [GrammarProductions.Expr],
         '-': [GrammarProductions.Expr],
         '(': [GrammarProductions.Expr],
@@ -38,27 +38,27 @@ parse_table = {
         TokenTypes.STRING.name: [GrammarProductions.Expr],
         TokenTypes.ID.name: [GrammarProductions.Expr],
         'call': [GrammarProductions.Expr],
-        'assign': [GrammarProductions.assign],
+        'assign': [GrammarProductions.Assign],
         'if': [GrammarProductions.Conditional]
     },
-    GrammarProductions.funcDef: {
-        'func': ['func', TokenTypes.ID.name, '(', GrammarProductions.Params, ')', '{', GrammarProductions.funcBody, '}']
+    GrammarProductions.FuncDef: {
+        'func': ['func', TokenTypes.ID.name, '(', GrammarProductions.Params, ')', '{', GrammarProductions.FuncBody, '}']
     },
-    GrammarProductions.funcBody: {
-        '+': [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        '-': [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        '(': [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        TokenTypes.NUMBER.name: [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        TokenTypes.STRING.name: [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        TokenTypes.ID.name: [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        'call': [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        'func': [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        'return': [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        'if': [GrammarProductions.funcEntry, GrammarProductions.funcBody],
-        'assign': [GrammarProductions.funcEntry, GrammarProductions.funcBody],
+    GrammarProductions.FuncBody: {
+        '+': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        '-': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        '(': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        TokenTypes.NUMBER.name: [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        TokenTypes.STRING.name: [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        TokenTypes.ID.name: [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        'call': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        'func': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        'return': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        'if': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        'assign': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
         '}': []
     },
-    GrammarProductions.funcEntry: {
+    GrammarProductions.FuncEntry: {
         '+': [GrammarProductions.Expr],
         '-': [GrammarProductions.Expr],
         '(': [GrammarProductions.Expr],
@@ -66,9 +66,9 @@ parse_table = {
         TokenTypes.STRING.name: [GrammarProductions.Expr],
         TokenTypes.ID.name: [GrammarProductions.Expr],
         'call': [GrammarProductions.Expr],
-        'func': [GrammarProductions.funcDef],
+        'func': [GrammarProductions.FuncDef],
         'return': ['return', GrammarProductions.Expr],
-        'assign': [GrammarProductions.assign],
+        'assign': [GrammarProductions.Assign],
         'if': [GrammarProductions.Conditional]
     },
         GrammarProductions.Params: {
@@ -103,9 +103,9 @@ parse_table = {
         TokenTypes.ID.name: [TokenTypes.ID.name]
     },
     GrammarProductions.KeyWordParam: {
-        'assign': [GrammarProductions.assign]
+        'assign': [GrammarProductions.Assign]
     },
-    GrammarProductions.assign: {
+    GrammarProductions.Assign: {
         'assign': ['assign', TokenTypes.ID.name, '=', GrammarProductions.Expr]
     },
     GrammarProductions.Expr: {
@@ -205,7 +205,7 @@ parse_table = {
         TokenTypes.NUMBER.name: [TokenTypes.NUMBER.name],
         TokenTypes.STRING.name: [TokenTypes.STRING.name],
         TokenTypes.ID.name: [TokenTypes.ID.name],
-        'call': [GrammarProductions.call]
+        'call': [GrammarProductions.Call]
     },
     GrammarProductions.Conditional: {
         'if': ['if', GrammarProductions.Comparsion, '{', GrammarProductions.ConditionalBody, '}', GrammarProductions.ConditionalRest]
@@ -278,9 +278,9 @@ parse_table = {
         TokenTypes.STRING.name: [GrammarProductions.Expr],
         TokenTypes.ID.name: [GrammarProductions.Expr],
         'call': [GrammarProductions.Expr],
-        'assign': [GrammarProductions.assign]
+        'assign': [GrammarProductions.Assign]
     },
-        GrammarProductions.call: {
+        GrammarProductions.Call: {
         'call': ['call', TokenTypes.ID.name, '(', GrammarProductions.Args, ')']
     },
     GrammarProductions.Args: {
@@ -333,6 +333,6 @@ parse_table = {
         'call': [GrammarProductions.Expr]
     },
     GrammarProductions.KeyWordArg: {
-        'assign': [GrammarProductions.assign]
+        'assign': [GrammarProductions.Assign]
     }
 }
