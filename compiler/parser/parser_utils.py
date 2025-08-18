@@ -7,9 +7,9 @@ class GrammarProductions(Enum):
     StmtList = auto()
     Stmt = auto()
 
-    funcDef = auto()
-    funcBody = auto()
-    funcEntry = auto()
+    FuncDef = auto()
+    FuncBody = auto()
+    FuncEntry = auto()
 
     Params = auto()
     ParamList = auto()
@@ -21,7 +21,7 @@ class GrammarProductions(Enum):
     Param = auto()
     KeyWordParam = auto()
 
-    assign = auto()
+    Assign = auto()
 
     Expr = auto()
     ExprRest = auto()
@@ -42,7 +42,7 @@ class GrammarProductions(Enum):
     ConditionalBody = auto()
     Conditionalentry = auto()
 
-    call = auto()
+    Call = auto()
 
     Args = auto()
     ArgList = auto()
