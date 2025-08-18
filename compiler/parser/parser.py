@@ -35,6 +35,3 @@ def parser(tokens):
             break
         X, node = stack[-1]
     return root
-        # print(f"curr X: {X}")
-        # print(f"curr stack {stack}")
-        # print(f"curr token {token_type}\n")
