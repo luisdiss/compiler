@@ -2,7 +2,7 @@
 
 This repository documents my progress in building a compiler from scratch. It's purpose is to increase my understanding of compiler technology and exhibit my technical skills. The compiler implements a high level procedural programming language. It supports a minimal set programming constructs like functions, conditionals, variable assignment and more.
 
-So far, the lexer and parser has been finished.
+So far, the lexer and parser have been finished.
 
 ## Lexer
 
