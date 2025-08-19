@@ -105,8 +105,9 @@ The `raw_state_table` is implemented as a nested dictionary in `raw_state_table.
 ## Parser
 The parser takes a sequence of tokens from the lexer and determines whether the sequence is a well formed program. I opted for a parsing architecture which is designed to parse a particular class of grammars called LL(1). This choice was made because LL(1) parsers are as fast as practical alternatives such as LALR(1) and LR(1) but are simpler to implement by hand. The tradeoff is that ll(1) grammars are more restrictive than other classes of grammars because they must be free of left recursion, be fully left factored and have no first/follow conflicts. The practical consequences are that building a grammar appropriate for a ll(1) parser requires a careful and iterative design process, and the grammar may be less expressive than one may hope for a modern programming language.
 
-# Building a Grammar 
+### Building a Grammar 
 Building the parser starts with a general description of how a valid program can be structured. This description is called a grammar. After some iteration I produced the grammar below, which is almost LL(1) except for the ambiguity detailed in the comment above the ExprRest production. This ambiguity is resolved in the parse table construction below so that an ll(1) parsing algorithm can still be employed.
+
 ```
 P        -> StmtList
 StmtList -> Stmt StmtList | ε
@@ -167,9 +168,9 @@ KeyWordArg             -> Assign
 
 It became apparent how tightly coupled the lexer and parser designs are. A knowledge of the type of grammar the parser will use effects the granularity of the tokens the lexer should produce. My lexer recognises punctuation symbols so to parse comparsion operators like >= and <= my parser would have to be ll(2) atleast. To remedy this without having to redesign the parser, I added keyword like operators which are distinguished post lexing – logic which already exists to distinguish keywords from IDs. If and when I refator the lexer I will consider removing this workaround in favour of more natural comparision operator syntax.
 
-# First and Follow Set Construction
+### First and Follow Set Construction
 
-To build the parser table we need first and follow sets for all nonterminals.
+To build the parse table we need first and follow sets for all nonterminals.
 
 We can construct first sets by applying the following rules to all grammar productions:
 
@@ -294,6 +295,6 @@ Arg ,, |, )
 KeyWordArg ,, )
 ```
 
-# Parse Table Construction
+### Parse Table Construction
 
-# Parsing logic
+### Parsing logic
