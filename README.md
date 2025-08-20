@@ -25,7 +25,7 @@ By finding the epsilon colsure of each transtion in the NFA we can generate a DF
 
 I learned three things from prototyping the lexer.
 1. keywords should be recognised as IDs and checked against hardcoded keywords.
-2. The state table should be processed to flatten the transition classes into individual characters
+2. The state table should be processed to flatten the transition classes into individual characters.
 3. Use disjoint character classes on the first state of the combined NFA (this is possible because of 1.)
 
 (1.) Simplifies subset construction at the expense of a couple of lines of extra code in the lexer. (2.) Removes the runtime logic in the lexer needed to resolve whether a character belongs to a transition class. This makes the lexer logic more readable and allows for an average case O(1) lookup. (3.) Reduces the complexity of token creation by removing the need for priority rules based on token type. The lexer can naturally take the longest token once no more transitions are possible.
@@ -103,7 +103,7 @@ S1 = {1, 10, 11}
 The `raw_state_table` is implemented as a nested dictionary in `raw_state_table.py` allowing it to be accessed with meaninful names in constant time on average.  This results in a data structure that is readable and efficient. Rather than hardcoding the transition classes at each state, I use a separate dictionary, `transition_classes`, to encapsulate them. The values of of the transition classes are implemented as strings for fast iteration. An Enum is used for the transition class keys to encapsulate key definitions which increases maintainability and reduces errors from mispelled/invalid keys. The `lexer` code is designed to be as clean as possible and lives in `lexer.py`. It loops through all characters in the input following the transitions defined in the state table. I used the `.get` method to look up the next state, which returns gracefully if there is no transition in the current state matching the current character. If it transitions to another state, it tries to access the the type of token accepeted at this state. If this state is not accepting, `.get` returns None and it loops. This process continues until there are no transitions left to make. If we have encoutered an accepting state, we create and store the token and reset the state variables to process the rest of the input.
 
 ## Parser
-The parser takes a sequence of tokens from the lexer and determines whether the sequence is a well formed program. I opted for a parsing architecture which is designed to parse a particular class of grammars called LL(1). This choice was made because LL(1) parsers are as fast as practical alternatives such as LALR(1) and LR(1) but are simpler to implement by hand. The tradeoff is that LL(1) grammars are more restrictive than other classes of grammars because they must be free of left recursion, be fully left factored and have no first/follow conflicts. The practical consequences are that building a grammar appropriate for a LL(1) parser requires a careful and iterative design process, and the grammar may be less expressive than one may hope for a modern programming language.
+The parser takes a sequence of tokens from the lexer determines whether it is a well formed program and outputs a syntax tree. I opted for a parsing architecture which is designed to parse a particular class of grammars called LL(1). This choice was made because LL(1) parsers are as fast as practical alternatives such as LALR(1) and LR(1) but are simpler to implement by hand. The tradeoff is that LL(1) grammars are more restrictive than other classes of grammars because they must be free of left recursion, be fully left factored and have no first/follow conflicts. Building a grammar appropriate for a LL(1) parser requires a careful and iterative design process, and the grammar may be less expressive than one may hope for a modern programming language.
 
 ### Building a Grammar 
 Building the parser starts with a general description of how a valid program can be structured. This description is called a grammar. After some iteration I produced the grammar below, which is almost LL(1) except for the ambiguity detailed in the comment above the ExprRest production. This ambiguity is resolved in the parse table construction below so that an LL(1) parsing algorithm can still be employed.
@@ -166,7 +166,7 @@ Arg                    -> Expr
 KeyWordArg             -> Assign
 ```
 
-It Learned how the design of the lexer and the parser influence each other. A knowledge of the type of grammar the parser will use effects the granularity of the tokens the lexer should produce. My lexer recognises singular punctuation symbols so to parse comparsion operators like >= and <= my parser would require two tokens of lookahead. To remedy this without having to redesign the parser, I added keyword like operators which are distinguished post lexing – logic which already exists to distinguish keywords from IDs. If and when I refator the compiler, I will consider removing this workaround in favour of more natural comparision operator syntax.
+I learned how the design of the lexer and the parser influence each other. A knowledge of the type of grammar the parser will use determines the granularity of the tokens the lexer should produce. Because my lexer recognises single-character punctuation, parsing comparison operators like >= and <= would require two tokens of lookahead. To remedy this without having to redesign the parser, I added keyword like operators which are distinguished post lexing – logic which already exists to distinguish keywords from IDs. If and when I refator the compiler, I will consider removing this workaround in favour of more natural comparision operator syntax.
 
 ### First and Follow Set Construction
 
@@ -175,8 +175,8 @@ To build the parse table we need first and follow sets for all nonterminals.
 We can construct first sets by applying the following rules to all grammar productions:
 
 1) For X -> Y1Y2Y3...Yk, if ε ∈ Yi for i=[1...i-1] , then first(Yi) ⊆ first(X).
-2) If ε ∈ all Y productions for a given X, then ε ∈ first(X)
-3) If X -> ε is a production, then ε is in first(X)
+2) If ε ∈ Yj for all j =[1...k], then ε ∈ first(X).
+3) If X -> ε is a production, then ε is in first(X).
 
 Tip: work on the productions that have shallow derivations first.
 
@@ -235,7 +235,7 @@ Arg +, -, (, NUMBER, STRING, ID, CALL
 KeyWordArg  ASSIGN
 ```
 
-To produce the follow sets, first we add $ to follow(S), where S is the start symbol. Then for all non terminals A, we apply the following rules for all occurences of A. 
+To produce the follow sets, first we add $ to follow(S), where S is the start symbol. Then, for all non terminals A, we apply the following rules for all occurences of A. 
 
 1) If there is a production of the form B -> a A c, then all terminals in first(c) are in follow(A) (apart from epsilon).
 2) If the production is of the form B -> a A, or B -> a A c where c =>* ε, then all terminals in follow(B) are in follow(A).
@@ -297,4 +297,10 @@ KeyWordArg ,, )
 
 ### Parse Table Construction
 
+The first and follow sets are used in a standard algorithm to produce the parse table. I implemented the `parse_table` as a nested dictionary for the same reasons as the state table. The production with head ExprRest has a first/follow conflict because ExprRest =>* ε, and first(AddOp) and follow(ExprRest) are not disjoint. To solve this, I discarded the table entries in follow(ExprRest) which are also in first(AddOp). This means that the compiler can't recognise, as the grammar intends, a new line with an expression that starts with a unary op. This is fine as we can wrap an expression in parentheses as a work around.
+
 ### Parsing logic
+
+The parser is an implementation of a stardard LL(1) parsing procedure. It uses a stack and parse table to expand non terminals or match terminals against the input. The complexity of the parsing algorithm is O(n) with respect to the number of tokens being processed. This is because each token is consumed once, during which, all other operations are constant. The stack is implemented as a list because it provides: O(1) amortised appending, O(1) amortised popping of the last element, and O(1) access to the last element. A deque is equally efficient for these operations but lists have a simpler interface.
+The syntax tree is built using the `Node` class which holds references to child nodes. The tree's structure is represented implicitly through object references between nodes removing the need for a separate data structure.
+
