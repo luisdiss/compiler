@@ -120,7 +120,7 @@ parse_table = {
     GrammarProductions.ExprRest: {
         '+': ['+', GrammarProductions.Term, GrammarProductions.ExprRest],
         '-': ['-', GrammarProductions.Term, GrammarProductions.ExprRest],
-        # ε-production: all follow set except '+' and '-' to remove ll(1) conflict
+        #all follow set except '+' and '-' to remove ll(1) conflict
         '(': [],
         TokenTypes.NUMBER.name: [],
         TokenTypes.STRING.name: [],
@@ -237,7 +237,6 @@ parse_table = {
         'true': [GrammarProductions.Bool],
         'false': [GrammarProductions.Bool]
     },
-    #is this opt correct?
     GrammarProductions.ComparisonTail: {
         'gt': ['gt', GrammarProductions.Expr, GrammarProductions.ComparisonTail],
         'lt': ['lt', GrammarProductions.Expr, GrammarProductions.ComparisonTail],
