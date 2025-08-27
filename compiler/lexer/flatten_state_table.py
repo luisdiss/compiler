@@ -13,7 +13,7 @@ def flatten_state_table(state_table):
 
 flattened_state_table = flatten_state_table(raw_state_table)
 
-with open("flattened_state_table.py", "w") as f:
+with open("compiler/lexer/flattened_state_table.py", "w") as f:
     f.write('flattened_state_table = ')
     f.write(pprint.pformat(flattened_state_table))
     f.write('\n')
