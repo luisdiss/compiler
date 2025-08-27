@@ -4,6 +4,10 @@ This repository documents my progress in building a compiler from scratch. It's 
 
 So far, the lexer and parser have been finished.
 
+The individual components can be imported as modules and there is a script called main.py that performs lexing and parsing on a sample program. I'm hesitant to produce documentation for the language as it will no doubt need to be changed. Building the parser made lexer design more lucid, and I expect subsequent design to inspire changes.
+
+Below is an explanation of the design. If you are particularly intrested in the software construction and algorithm design, as opposed to the compiler theory, read sections: Prototyping the Lexer, Lexing Logic and State Table Construction, Parse Table Construction, and Parsing Logic.
+
 ## Lexer
 
 ### Regular Expressions
@@ -103,7 +107,7 @@ S1 = {1, 10, 11}
 The `raw_state_table` is implemented as a nested dictionary in `raw_state_table.py` allowing it to be accessed with meaninful names in constant time on average.  This results in a data structure that is readable and efficient. Rather than hardcoding the transition classes at each state, I use a separate dictionary, `transition_classes`, to encapsulate them. The values of of the transition classes are implemented as strings for fast iteration. An Enum is used for the transition class keys to encapsulate key definitions which increases maintainability and reduces errors from mispelled/invalid keys. The `lexer` code is designed to be as clean as possible and lives in `lexer.py`. It loops through all characters in the input following the transitions defined in the state table. I used the `.get` method to look up the next state, which returns gracefully if there is no transition in the current state matching the current character. If it transitions to another state, it tries to access the the type of token accepeted at this state. If this state is not accepting, `.get` returns None and it loops. This process continues until there are no transitions left to make. If we have encoutered an accepting state, we create and store the token and reset the state variables to process the rest of the input.
 
 ## Parser
-The parser takes a sequence of tokens from the lexer determines whether it is a well formed program and outputs a syntax tree. I opted for a parsing architecture which is designed to parse a particular class of grammars called LL(1). This choice was made because LL(1) parsers are as fast as practical alternatives such as LALR(1) and LR(1) but are simpler to implement by hand. The tradeoff is that LL(1) grammars are more restrictive than other classes of grammars because they must be free of left recursion, be fully left factored and have no first/follow conflicts. Building a grammar appropriate for a LL(1) parser requires a careful and iterative design process, and the grammar may be less expressive than one may hope for a modern programming language.
+The parser takes a sequence of tokens from the lexer, determines whether it is a well formed program and outputs a syntax tree. I opted for a parsing architecture which is designed to parse a particular class of grammars called LL(1). This choice was made because LL(1) parsers are as fast as practical alternatives such as LALR(1) and LR(1) but are simpler to implement by hand. The tradeoff is that LL(1) grammars are more restrictive than other classes of grammars because they must be free of left recursion, be fully left factored and have no first/follow conflicts. Building a grammar appropriate for a LL(1) parser requires a careful and iterative design process, and the grammar may be less expressive than one may hope for a modern programming language.
 
 ### Building a Grammar 
 Building the parser starts with a general description of how a valid program can be structured. This description is called a grammar. After some iteration I produced the grammar below, which is almost LL(1) except for the ambiguity detailed in the comment above the ExprRest production. This ambiguity is resolved in the parse table construction below so that an LL(1) parsing algorithm can still be employed.
@@ -299,7 +303,7 @@ KeyWordArg ,, )
 
 The first and follow sets are used in a standard algorithm to produce the parse table. I implemented the `parse_table` as a nested dictionary for the same reasons as the state table. The production with head ExprRest has a first/follow conflict because ExprRest =>* ε, and first(AddOp) and follow(ExprRest) are not disjoint. To solve this, I discarded the table entries in follow(ExprRest) which are also in first(AddOp). This means that the compiler can't recognise, as the grammar intends, a new line with an expression that starts with a unary op. This is fine as we can wrap an expression in parentheses as a work around.
 
-### Parsing logic
+### Parsing Logic
 
 The parser is an implementation of a stardard LL(1) parsing procedure. It uses a stack and parse table to expand non terminals or match terminals against the input. The complexity of the parsing algorithm is O(n) with respect to the number of tokens being processed. This is because each token is consumed once, during which, all other operations are constant. The stack is implemented as a list because it provides: O(1) amortised appending, O(1) amortised popping of the last element, and O(1) access to the last element. A deque is equally efficient for these operations but lists have a simpler interface.
 The syntax tree is built using the `Node` class which holds references to child nodes. The tree's structure is represented implicitly through object references between nodes removing the need for a separate data structure.
