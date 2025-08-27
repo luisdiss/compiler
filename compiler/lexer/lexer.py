@@ -1,6 +1,12 @@
 from compiler.lexer.token_utils import create_token
 from compiler.lexer.flattened_state_table import flattened_state_table as state_table
 
+class LexerError(Exception):
+    def __init__(self, message: str, position: int, char: str):
+        super().__init__(message)
+        self.position = position
+        self.char = char
+
 def lexer(s):
     state, i, tokens, accepted_token_type, buffer = "S1", 0, [], "", ""
     while i < len(s):
@@ -18,7 +24,7 @@ def lexer(s):
                 create_token(accepted_token_type, buffer, tokens)
                 state, accepted_token_type, buffer = "S1", "", ""
             else:
-                raise ValueError("")
+                raise LexerError(f"Unexpected character '{char}' at position {i}", i, char)
     else:
         if accepted_token_type:
             create_token(accepted_token_type, buffer, tokens)
