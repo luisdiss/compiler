@@ -41,7 +41,8 @@ raw_state_table = {
           "accepting_token_type": TokenTypes.NUMBER.name},
     "S4":{"transitions": {CharClasses.dot: "S12"},
           "accepting_token_type": TokenTypes.NUMBER.name},
-    "S5":{"transitions": {CharClasses.ascii: "S13"}},
+    "S5":{"transitions": {CharClasses.ascii: "S13",
+                          CharClasses.speech_mark: "S14"}},
     "S6":{"transitions": {},
           "accepting_token_type": TokenTypes.OP.name},
     "S7":{"transitions": {},
@@ -63,4 +64,4 @@ raw_state_table = {
     "S14":{"transitions": {},
            "accepting_token_type": TokenTypes.STRING.name},
     "S15":{"transitions": {CharClasses.digits: "S15"},
-           "accepting_token_type": TokenTypes.STRING.name}}
+           "accepting_token_type": TokenTypes.NUMBER.name}}
