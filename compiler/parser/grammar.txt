@@ -4,7 +4,7 @@ Stmt     -> FuncDef | Expr | Assign | Conditional
 
 FuncDef      -> FUNC ID ( Params ) { FuncBody }
 FuncBody     -> FuncEntry FuncBody | ε
-FuncEntry    -> Expr | FuncDef | RETURN Expr | Assign | Conditional 
+FuncEntry    -> Expr | FuncDef | RETURN Expr | Assign | Conditional
 
 Params                   -> ParamList KeyWordParamListTail | KeyWordParamList | ε
 ParamList                -> Param ParamListRest
@@ -31,7 +31,7 @@ AddOp           -> + | -
 MultOp          -> * | /
 Atom            -> NUMBER | STRING | ID | Call
 
-Conditional         -> IF Comparison { ConditionalBody } 
+Conditional         -> IF Comparison { ConditionalBody } ConditionalRest
 ConditionalRest     -> ELSE { ConditionalBody } | ε
 --------------
 Comparsion          -> Expr ComparisonTail | Bool
@@ -53,6 +53,3 @@ KeyWordArgList         -> KeyWordArg KeyWordArgListRest
 KeyWordArgListRest     -> , KeyWordArg KeyWordArgListRest | ε
 Arg                    -> Expr
 KeyWordArg             -> Assign
-
-
-
