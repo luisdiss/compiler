@@ -1,20 +1,20 @@
 from compiler.lexer.token_utils import TokenTypes
-from compiler.parser.parser_utils import GrammarProductions
+from compiler.parser.parser_utils import GrammarProductions, ListInitMarker, NonTerminalMarkers, TerminalMarkers, OpMarkers, BuildMarkers
 
 #tokens that were distinguised in create_token have been entered as raw strings. This is error prone and support to add new tokens to TokenTypes post lexing is needed.
 parse_table = {
     GrammarProductions.P: {
-        'func': [GrammarProductions.StmtList],
-        '+': [GrammarProductions.StmtList],
-        '-': [GrammarProductions.StmtList],
-        '(': [GrammarProductions.StmtList],
-        TokenTypes.NUMBER.name: [GrammarProductions.StmtList],
-        TokenTypes.STRING.name: [GrammarProductions.StmtList],
-        TokenTypes.ID.name: [GrammarProductions.StmtList],
-        'call': [GrammarProductions.StmtList],
-        'assign': [GrammarProductions.StmtList],
-        'if': [GrammarProductions.StmtList],
-        '$': [GrammarProductions.StmtList]
+        'func': [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        '+': [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        '-': [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        '(': [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        TokenTypes.NUMBER.name: [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        TokenTypes.STRING.name: [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        TokenTypes.ID.name: [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        'call': [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        'assign': [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        'if': [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P],
+        '$': [ListInitMarker.ListInit, GrammarProductions.StmtList, NonTerminalMarkers.P]
     },
     GrammarProductions.StmtList: {
         'func': [GrammarProductions.Stmt, GrammarProductions.StmtList],
@@ -42,20 +42,20 @@ parse_table = {
         'if': [GrammarProductions.Conditional]
     },
     GrammarProductions.FuncDef: {
-        'func': ['func', TokenTypes.ID.name, '(', GrammarProductions.Params, ')', '{', GrammarProductions.FuncBody, '}']
+        'func': [ListInitMarker.ListInit, 'func', TerminalMarkers.DeclID, TokenTypes.ID.name, '(', GrammarProductions.Params, ')', '{', GrammarProductions.FuncBody, '}', NonTerminalMarkers.FuncDef]
     },
     GrammarProductions.FuncBody: {
-        '+': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        '-': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        '(': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        TokenTypes.NUMBER.name: [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        TokenTypes.STRING.name: [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        TokenTypes.ID.name: [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        'call': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        'func': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        'return': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        'if': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
-        'assign': [GrammarProductions.FuncEntry, GrammarProductions.FuncBody],
+        '+': [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        '-': [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        '(': [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        TokenTypes.NUMBER.name: [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        TokenTypes.STRING.name: [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        TokenTypes.ID.name: [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        'call': [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        'func': [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        'return': [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        'if': [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
+        'assign': [ListInitMarker.ListInit, GrammarProductions.FuncEntry, GrammarProductions.FuncBody, NonTerminalMarkers.FuncBody],
         '}': []
     },
     GrammarProductions.FuncEntry: {
@@ -67,13 +67,13 @@ parse_table = {
         TokenTypes.ID.name: [GrammarProductions.Expr],
         'call': [GrammarProductions.Expr],
         'func': [GrammarProductions.FuncDef],
-        'return': ['return', GrammarProductions.Expr],
+        'return': [ListInitMarker.ListInit, 'return', GrammarProductions.Expr, NonTerminalMarkers.Return],
         'assign': [GrammarProductions.Assign],
         'if': [GrammarProductions.Conditional]
     },
         GrammarProductions.Params: {
-        TokenTypes.ID.name: [GrammarProductions.ParamList, GrammarProductions.KeyWordParamListTail],
-        'assign': [GrammarProductions.KeyWordParamList],
+        TokenTypes.ID.name: [ListInitMarker.ListInit, GrammarProductions.ParamList, GrammarProductions.KeyWordParamListTail, NonTerminalMarkers.Params],
+        'assign': [ListInitMarker.ListInit, GrammarProductions.KeyWordParamList, NonTerminalMarkers.Params],
         ')': []
     },
     GrammarProductions.ParamList: {
@@ -85,7 +85,7 @@ parse_table = {
         ')': []
     },
     GrammarProductions.KeyWordParamListTail: {
-        '|': ['|', GrammarProductions.KeyWordParam, GrammarProductions.KeyWordParamListTailRest],
+        '|': [ '|', GrammarProductions.KeyWordParam, GrammarProductions.KeyWordParamListTailRest],
         ')': []
     },
     GrammarProductions.KeyWordParamListTailRest: {
@@ -100,26 +100,26 @@ parse_table = {
         ')': []
     },
     GrammarProductions.Param: {
-        TokenTypes.ID.name: [TokenTypes.ID.name]
+        TokenTypes.ID.name: [ListInitMarker.ListInit, TerminalMarkers.DeclID, TokenTypes.ID.name, NonTerminalMarkers.Param]
     },
     GrammarProductions.KeyWordParam: {
-        'assign': [GrammarProductions.Assign]
+        'assign': [ListInitMarker.ListInit, GrammarProductions.Assign, NonTerminalMarkers.KeyWordParam]
     },
     GrammarProductions.Assign: {
-        'assign': ['assign', TokenTypes.ID.name, '=', GrammarProductions.Expr]
+        'assign': [ListInitMarker.ListInit, 'assign', TerminalMarkers.DeclID, TokenTypes.ID.name, '=', GrammarProductions.Expr, NonTerminalMarkers.Assign]
     },
     GrammarProductions.Expr: {
-        '+': [GrammarProductions.Term, GrammarProductions.ExprRest],
-        '-': [GrammarProductions.Term, GrammarProductions.ExprRest],
-        '(': [GrammarProductions.Term, GrammarProductions.ExprRest],
-        TokenTypes.NUMBER.name: [GrammarProductions.Term, GrammarProductions.ExprRest],
-        TokenTypes.STRING.name: [GrammarProductions.Term, GrammarProductions.ExprRest],
-        TokenTypes.ID.name: [GrammarProductions.Term, GrammarProductions.ExprRest],
-        'call': [GrammarProductions.Term, GrammarProductions.ExprRest]
+        '+': [ListInitMarker.ListInit, GrammarProductions.Term, GrammarProductions.ExprRest, NonTerminalMarkers.Expr],
+        '-': [ListInitMarker.ListInit, GrammarProductions.Term, GrammarProductions.ExprRest, NonTerminalMarkers.Expr],
+        '(': [ListInitMarker.ListInit, GrammarProductions.Term, GrammarProductions.ExprRest, NonTerminalMarkers.Expr],
+        TokenTypes.NUMBER.name: [ListInitMarker.ListInit, GrammarProductions.Term, GrammarProductions.ExprRest, NonTerminalMarkers.Expr],
+        TokenTypes.STRING.name: [ListInitMarker.ListInit, GrammarProductions.Term, GrammarProductions.ExprRest, NonTerminalMarkers.Expr],
+        TokenTypes.ID.name: [ListInitMarker.ListInit, GrammarProductions.Term, GrammarProductions.ExprRest, NonTerminalMarkers.Expr],
+        'call': [ListInitMarker.ListInit, GrammarProductions.Term, GrammarProductions.ExprRest, NonTerminalMarkers.Expr]
     },
     GrammarProductions.ExprRest: {
-        '+': ['+', GrammarProductions.Term, GrammarProductions.ExprRest],
-        '-': ['-', GrammarProductions.Term, GrammarProductions.ExprRest],
+        '+': [GrammarProductions.AddOp, GrammarProductions.Term, BuildMarkers.BinOp, GrammarProductions.ExprRest],
+        '-': [GrammarProductions.AddOp, GrammarProductions.Term, BuildMarkers.BinOp, GrammarProductions.ExprRest],
         #all follow set except '+' and '-' to remove ll(1) conflict
         '(': [],
         TokenTypes.NUMBER.name: [],
@@ -144,18 +144,17 @@ parse_table = {
         '|': []
     },
     GrammarProductions.Term: {
-        '+': [GrammarProductions.Factor, GrammarProductions.TermRest],
-        '-': [GrammarProductions.Factor, GrammarProductions.TermRest],
-        '(': [GrammarProductions.Factor, GrammarProductions.TermRest],
-        TokenTypes.NUMBER.name: [GrammarProductions.Factor, GrammarProductions.TermRest],
-        TokenTypes.STRING.name: [GrammarProductions.Factor, GrammarProductions.TermRest],
-        TokenTypes.ID.name: [GrammarProductions.Factor, GrammarProductions.TermRest],
-        'call': [GrammarProductions.Factor, GrammarProductions.TermRest]
+        '+': [ListInitMarker.ListInit, GrammarProductions.Factor, GrammarProductions.TermRest, NonTerminalMarkers.Term],
+        '-': [ListInitMarker.ListInit, GrammarProductions.Factor, GrammarProductions.TermRest, NonTerminalMarkers.Term],
+        '(': [ListInitMarker.ListInit, GrammarProductions.Factor, GrammarProductions.TermRest, NonTerminalMarkers.Term],
+        TokenTypes.NUMBER.name: [ListInitMarker.ListInit, GrammarProductions.Factor, GrammarProductions.TermRest, NonTerminalMarkers.Term],
+        TokenTypes.STRING.name: [ListInitMarker.ListInit, GrammarProductions.Factor, GrammarProductions.TermRest, NonTerminalMarkers.Term],
+        TokenTypes.ID.name: [ListInitMarker.ListInit, GrammarProductions.Factor, GrammarProductions.TermRest, NonTerminalMarkers.Term],
+        'call': [ListInitMarker.ListInit, GrammarProductions.Factor, GrammarProductions.TermRest, NonTerminalMarkers.Term]
     },
-    #I think these can be optimised by substituting * and / in directly for GP.MultOp
     GrammarProductions.TermRest: {
-        '*': [GrammarProductions.MultOp, GrammarProductions.Factor, GrammarProductions.TermRest],
-        '/': [GrammarProductions.MultOp, GrammarProductions.Factor, GrammarProductions.TermRest],
+        '*': [GrammarProductions.MultOp, GrammarProductions.Factor, BuildMarkers.BinOp, GrammarProductions.TermRest],
+        '/': [GrammarProductions.MultOp, GrammarProductions.Factor, BuildMarkers.BinOp, GrammarProductions.TermRest],
         '+': [],
         '-': [],
         '(': [],
@@ -181,8 +180,8 @@ parse_table = {
         '|': []
     },
     GrammarProductions.Factor: {
-        '+': [GrammarProductions.UnaryOp, GrammarProductions.Factor],
-        '-': [GrammarProductions.UnaryOp, GrammarProductions.Factor],
+        '+': [ListInitMarker.ListInit, GrammarProductions.UnaryOp, GrammarProductions.Factor, NonTerminalMarkers.UnaryOp],
+        '-': [ListInitMarker.ListInit, GrammarProductions.UnaryOp, GrammarProductions.Factor, NonTerminalMarkers.UnaryOp],
         '(': ['(', GrammarProductions.Expr, ')'],
         TokenTypes.NUMBER.name: [GrammarProductions.Atom],
         TokenTypes.STRING.name: [GrammarProductions.Atom],
@@ -190,25 +189,25 @@ parse_table = {
         'call': [GrammarProductions.Atom]
     },
     GrammarProductions.UnaryOp: {
-        '+': ['+'],
-        '-': ['-']
+        '+': [OpMarkers.Unary, '+'],
+        '-': [OpMarkers.Unary, '-']
     },
     GrammarProductions.AddOp: {
-        '+': ['+'],
-        '-': ['-']
+        '+': [OpMarkers.AddOp, '+'],
+        '-': [OpMarkers.AddOp, '-']
     },
     GrammarProductions.MultOp: {
-        '*': ['*'],
-        '/': ['/']
+        '*': [OpMarkers.MultOp, '*'],
+        '/': [OpMarkers.AddOp, '/']
     },
     GrammarProductions.Atom: {
-        TokenTypes.NUMBER.name: [TokenTypes.NUMBER.name],
-        TokenTypes.STRING.name: [TokenTypes.STRING.name],
-        TokenTypes.ID.name: [TokenTypes.ID.name],
+        TokenTypes.NUMBER.name: [TerminalMarkers.NUMBER, TokenTypes.NUMBER.name],
+        TokenTypes.STRING.name: [TerminalMarkers.STRING, TokenTypes.STRING.name],
+        TokenTypes.ID.name: [TerminalMarkers.ExprID, TokenTypes.ID.name],
         'call': [GrammarProductions.Call]
     },
     GrammarProductions.Conditional: {
-        'if': ['if', GrammarProductions.Comparsion, '{', GrammarProductions.ConditionalBody, '}', GrammarProductions.ConditionalRest]
+        'if': [ListInitMarker.ListInit, 'if', GrammarProductions.Comparsion, '{', GrammarProductions.ConditionalBody, '}', GrammarProductions.ConditionalRest, NonTerminalMarkers.Conditional]
     },
     GrammarProductions.ConditionalRest: {
         'else': ['else', '{', GrammarProductions.ConditionalBody, '}'],
@@ -227,46 +226,46 @@ parse_table = {
         '}': []
     },
     GrammarProductions.Comparsion: {
-        '+': [GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        '-': [GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        '(': [GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        TokenTypes.NUMBER.name: [GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        TokenTypes.STRING.name: [GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        TokenTypes.ID.name: [GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        'call': [GrammarProductions.Expr, GrammarProductions.ComparisonTail],
+        '+': [ListInitMarker.ListInit, GrammarProductions.Expr, GrammarProductions.ComparisonTail, NonTerminalMarkers.Comparison],
+        '-': [ListInitMarker.ListInit, GrammarProductions.Expr, GrammarProductions.ComparisonTail, NonTerminalMarkers.Comparison],
+        '(': [ListInitMarker.ListInit, GrammarProductions.Expr, GrammarProductions.ComparisonTail, NonTerminalMarkers.Comparison],
+        TokenTypes.NUMBER.name: [ListInitMarker.ListInit, GrammarProductions.Expr, GrammarProductions.ComparisonTail, NonTerminalMarkers.Comparison],
+        TokenTypes.STRING.name: [ListInitMarker.ListInit, GrammarProductions.Expr, GrammarProductions.ComparisonTail, NonTerminalMarkers.Comparison],
+        TokenTypes.ID.name: [ListInitMarker.ListInit, GrammarProductions.Expr, GrammarProductions.ComparisonTail, NonTerminalMarkers.Comparison],
+        'call': [ListInitMarker.ListInit, GrammarProductions.Expr, GrammarProductions.ComparisonTail, NonTerminalMarkers.Comparison],
         'true': [GrammarProductions.Bool],
         'false': [GrammarProductions.Bool]
     },
     GrammarProductions.ComparisonTail: {
-        'gt': ['gt', GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        'lt': ['lt', GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        'ge': ['ge', GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        'le': ['le', GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        'eq': ['eq', GrammarProductions.Expr, GrammarProductions.ComparisonTail],
-        'ne': ['ne', GrammarProductions.Expr, GrammarProductions.ComparisonTail],
+        'gt': [GrammarProductions.CompOp, GrammarProductions.Expr, GrammarProductions.ComparisonTail],
+        'lt': [GrammarProductions.CompOp, GrammarProductions.Expr, GrammarProductions.ComparisonTail],
+        'ge': [GrammarProductions.CompOp, GrammarProductions.Expr, GrammarProductions.ComparisonTail],
+        'le': [GrammarProductions.CompOp, GrammarProductions.Expr, GrammarProductions.ComparisonTail],
+        'eq': [GrammarProductions.CompOp, GrammarProductions.Expr, GrammarProductions.ComparisonTail],
+        'ne': [GrammarProductions.CompOp, GrammarProductions.Expr, GrammarProductions.ComparisonTail],
         '{': []
     },
     GrammarProductions.CompOp: {
-        'gt': ['gt'],
-        'lt': ['lt'],
-        'ge': ['ge'],
-        'le': ['le'],
-        'eq': ['eq'],
-        'ne': ['ne']
+        'gt': [OpMarkers.CompOp, 'gt'],
+        'lt': [OpMarkers.CompOp, 'lt'],
+        'ge': [OpMarkers.CompOp, 'ge'],
+        'le': [OpMarkers.CompOp, 'le'],
+        'eq': [OpMarkers.CompOp, 'eq'],
+        'ne': [OpMarkers.CompOp, 'ne']
     },
     GrammarProductions.Bool: {
-        'true': ['true'],
-        'false': ['false']
+        'true': [TerminalMarkers.Bool, 'true'],
+        'false': [TerminalMarkers.Bool, 'false']
     },
     GrammarProductions.ConditionalBody: {
-        '+': [GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody],
-        '-': [GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody],
-        '(': [GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody],
-        TokenTypes.NUMBER.name: [GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody],
-        TokenTypes.STRING.name: [GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody],
-        TokenTypes.ID.name: [GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody],
-        'call': [GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody],
-        'assign': [GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody],
+        '+': [ListInitMarker.ListInit, GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody, NonTerminalMarkers.ConditionalBody],
+        '-': [ListInitMarker.ListInit, GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody, NonTerminalMarkers.ConditionalBody],
+        '(': [ListInitMarker.ListInit, GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody, NonTerminalMarkers.ConditionalBody],
+        TokenTypes.NUMBER.name: [ListInitMarker.ListInit, GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody, NonTerminalMarkers.ConditionalBody],
+        TokenTypes.STRING.name: [ListInitMarker.ListInit, GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody, NonTerminalMarkers.ConditionalBody],
+        TokenTypes.ID.name: [ListInitMarker.ListInit, GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody, NonTerminalMarkers.ConditionalBody],
+        'call': [ListInitMarker.ListInit, GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody, NonTerminalMarkers.ConditionalBody],
+        'assign': [ListInitMarker.ListInit, GrammarProductions.Conditionalentry, GrammarProductions.ConditionalBody, NonTerminalMarkers.ConditionalBody],
         '}': []
     },
     GrammarProductions.Conditionalentry: {
@@ -280,17 +279,17 @@ parse_table = {
         'assign': [GrammarProductions.Assign]
     },
         GrammarProductions.Call: {
-        'call': ['call', TokenTypes.ID.name, '(', GrammarProductions.Args, ')']
+        'call': [ListInitMarker.ListInit, 'call', TerminalMarkers.ExprID, TokenTypes.ID.name, '(', GrammarProductions.Args, ')', NonTerminalMarkers.Call]
     },
     GrammarProductions.Args: {
-        '+': [GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail],
-        '-': [GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail],
-        '(': [GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail],
-        TokenTypes.NUMBER.name: [GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail],
-        TokenTypes.STRING.name: [GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail],
-        TokenTypes.ID.name: [GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail],
-        'call': [GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail],
-        'assign': [GrammarProductions.KeyWordArgList],
+        '+': [ListInitMarker.ListInit, GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail, NonTerminalMarkers.Args],
+        '-': [ListInitMarker.ListInit, GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail, NonTerminalMarkers.Args],
+        '(': [ListInitMarker.ListInit, GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail, NonTerminalMarkers.Args],
+        TokenTypes.NUMBER.name: [ListInitMarker.ListInit, GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail, NonTerminalMarkers.Args],
+        TokenTypes.STRING.name: [ListInitMarker.ListInit, GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail, NonTerminalMarkers.Args],
+        TokenTypes.ID.name: [ListInitMarker.ListInit, GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail, NonTerminalMarkers.Args],
+        'call': [ListInitMarker.ListInit, GrammarProductions.ArgList, GrammarProductions.KeyWordArgListTail, NonTerminalMarkers.Args],
+        'assign': [ListInitMarker.ListInit, GrammarProductions.KeyWordArgList, NonTerminalMarkers.Args],
         ')': []
     },
     GrammarProductions.ArgList: {
@@ -323,15 +322,15 @@ parse_table = {
         ')': []
     },
     GrammarProductions.Arg: {
-        '+': [GrammarProductions.Expr],
-        '-': [GrammarProductions.Expr],
-        '(': [GrammarProductions.Expr],
-        TokenTypes.NUMBER.name: [GrammarProductions.Expr],
-        TokenTypes.STRING.name: [GrammarProductions.Expr],
-        TokenTypes.ID.name: [GrammarProductions.Expr],
-        'call': [GrammarProductions.Expr]
+        '+': [ListInitMarker.ListInit, GrammarProductions.Expr, NonTerminalMarkers.Arg],
+        '-': [ListInitMarker.ListInit, GrammarProductions.Expr, NonTerminalMarkers.Arg],
+        '(': [ListInitMarker.ListInit, GrammarProductions.Expr, NonTerminalMarkers.Arg],
+        TokenTypes.NUMBER.name: [ListInitMarker.ListInit, GrammarProductions.Expr, NonTerminalMarkers.Arg],
+        TokenTypes.STRING.name: [ListInitMarker.ListInit, GrammarProductions.Expr, NonTerminalMarkers.Arg],
+        TokenTypes.ID.name: [ListInitMarker.ListInit, GrammarProductions.Expr, NonTerminalMarkers.Arg],
+        'call': [ListInitMarker.ListInit, GrammarProductions.Expr, NonTerminalMarkers.Arg]
     },
     GrammarProductions.KeyWordArg: {
-        'assign': [GrammarProductions.Assign]
+        'assign': [ListInitMarker.ListInit, GrammarProductions.Assign, NonTerminalMarkers.KeyWordArg]
     }
 }
