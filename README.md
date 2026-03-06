@@ -6,7 +6,7 @@ Stages:
 &emsp;&emsp;✅ Lexing  
 &emsp;&emsp;✅ Parsing  
 &emsp;&emsp;✅ Semantic analysis  
-&emsp;&emsp;❌ Code generation     
+&emsp;&emsp;🛠️ Code generation     
 
 The individual components can be imported as modules and there is a script called main.py that performs lexing, parsing and semantic analysis on a sample program.
 
