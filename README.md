@@ -2,15 +2,21 @@
 
 This repository documents my progress in building a compiler from scratch. It's purpose is to increase my understanding of compiler technology and exhibit my technical skills. The compiler implements a custom, high level, imperative programming language with monomorphic functions and inferred types.
 
-Stages:
-  Lexing ✅
-  Parsing ✅
-  Semantic analysis ✅
-  Code generation ❌
+Stages:  
+&emsp;&emsp;✅ Lexing  
+&emsp;&emsp;✅ Parsing  
+&emsp;&emsp;✅ Semantic analysis  
+&emsp;&emsp;❌ Code generation     
 
 The individual components can be imported as modules and there is a script called main.py that performs lexing, parsing and semantic analysis on a sample program.
 
-Below is an explanation of the design. I started this project with zero understanding of compiler and programming langauge theory, and while not perfect, I have considered to consequences of the architecture and the efficienty of implementations. If you are particularly intrested in the software construction and algorithm design, as opposed to the compiler theory, read sections: Prototyping the Lexer, Lexing Logic and State Table Construction, Parse Table Construction, and Parsing Logic.
+Below is an explanation of the design. I started this project with zero understanding of compiler and programming langauge theory, and while not perfect, I have considered the consequences of the architecture and the efficienty of implementations. If you are particularly intrested in the software construction and algorithm design, as opposed to the compiler theory, read sections:  
+  
+&emsp;&emsp;* Prototyping the Lexer  
+&emsp;&emsp;* Lexing Logic and State Table Construction  
+&emsp;&emsp;* Parse Table Construction  
+&emsp;&emsp;* Parsing Logic  
+&emsp;&emsp; *Modified Parser Architecture and Implementation  
 
 ## Lexer
 
