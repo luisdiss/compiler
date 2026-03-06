@@ -1,12 +1,16 @@
 # A Compiler Built from Scratch
 
-This repository documents my progress in building a compiler from scratch. It's purpose is to increase my understanding of compiler technology and exhibit my technical skills. The compiler implements a high level procedural programming language. It supports a minimal set programming constructs like functions, conditionals, variable assignment and more.
+This repository documents my progress in building a compiler from scratch. It's purpose is to increase my understanding of compiler technology and exhibit my technical skills. The compiler implements a custom, high level, imperative programming language with monomorphic functions and inferred types.
 
-So far, the lexer and parser have been finished.
+Stages:
+  Lexing ✅
+  Parsing ✅
+  Semantic analysis ✅
+  Code generation ❌
 
-The individual components can be imported as modules and there is a script called main.py that performs lexing and parsing on a sample program. I'm hesitant to produce documentation for the language as it will no doubt need to be changed. Building the parser made lexer design more lucid, and I expect subsequent design to inspire changes.
+The individual components can be imported as modules and there is a script called main.py that performs lexing, parsing and semantic analysis on a sample program.
 
-Below is an explanation of the design. If you are particularly intrested in the software construction and algorithm design, as opposed to the compiler theory, read sections: Prototyping the Lexer, Lexing Logic and State Table Construction, Parse Table Construction, and Parsing Logic.
+Below is an explanation of the design. I started this project with zero understanding of compiler and programming langauge theory, and while not perfect, I have considered to consequences of the architecture and the efficienty of implementations. If you are particularly intrested in the software construction and algorithm design, as opposed to the compiler theory, read sections: Prototyping the Lexer, Lexing Logic and State Table Construction, Parse Table Construction, and Parsing Logic.
 
 ## Lexer
 
@@ -312,12 +316,12 @@ The syntax tree is built using the `Node` class which holds references to child 
 
 A raw parse tree is cumbersome due to the presence of nodes with no semantic meaning. Semantic analysis is best performed on an abstract syntax tree (AST): a representation of the program's structure with redundant nodes removed. The set of AST nodes are not necessarily a subset of the parse tree nodes.
 
+### Modified Parser Architecture and Implementation
+
 We could process the parse tree to produce an AST or modify the parser to that its output is an AST. The former results in more modular transparant code at the expense of speed. The latter is faster but more coupled. Given the language is not intended for use in production, the choice between these high level trade offs is not important. I chose to modify the parser to experiment with the coupled architecture. The existing parser utilises an explicit stack so I had to embed semantic actions in the parse table.
 
 There is an alternative architecture which uses neseted functions to parse tokens. In both architectures semantic actions are coupled with grammar structure, but the parse functions make this coupling transparent, leading to more maintainable code. In theory, parse functions are less efficient due to the call stack, however the overhead is neglible for typical inputs. Also languages that implement tail call optimisation will reduce this overhead further. In conclusion, I will maintian the explict stack based parser but I would prefer to use the parse function architecture in a future project.
 
-In absolute terms we have extra work from the semantic stack which handles ast nodes but the asymptotic time and space complexity remain the same. This is because the number of times we process a semantic action grows linearly with the number tokens that expand to a production containing said semantic action. All semantic actions are processed in constant time, and therfore, AST construction is O(n), where n is the number of tokens.
-
-### Implementation
+In absolute terms we have extra work from the semantic stack which handles ast nodes but the asymptotic time and space complexity remain the same. This is because the number of times we process a semantic action grows linearly with the number tokens that expand to a production containing said semantic action. All semantic actions are processed in constant time, and therfore, the time complexity of AST construction is O(n), where n is the number of tokens.
 
 Semantic actions are triggered during parsing by embedding markers into the parse table. The markers are implemented in several Enums, one for clearly defined type of action. For example, Any marker that corresponds to an action which accepts a list of semantic values and returns an AST node is a member of the `NonTerminalMarkers` Enum. Markers and corresponding actions are bound as key value pairs in the dictionary `parser_markers_to_actions`. The dictionary is better than a switch statment for large grammars, assuming that a larger grammar implies more parser actions. Parser actions use integer indexing to access objects from their input. This is error prone but manageable for this size project. We could implement specific accumulator lists for each action with named access.
