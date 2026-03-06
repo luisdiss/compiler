@@ -16,7 +16,7 @@ Below is an explanation of the design. I started this project with zero understa
 &emsp;&emsp;* Lexing Logic and State Table Construction  
 &emsp;&emsp;* Parse Table Construction  
 &emsp;&emsp;* Parsing Logic  
-&emsp;&emsp; *Modified Parser Architecture and Implementation  
+&emsp;&emsp;* Modified Parser Architecture and Implementation  
 
 ## Lexer
 
