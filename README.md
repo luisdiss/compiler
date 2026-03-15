@@ -10,7 +10,7 @@ Stages:
 
 The individual components can be imported as modules and there is a script called main.py that performs lexing, parsing and semantic analysis on a sample program.
 
-Below is an explanation of the design. I started this project with zero understanding of compiler and programming langauge theory, and while not perfect, I have considered the consequences of the architecture and the efficienty of implementations. If you are particularly intrested in the software construction and algorithm design, as opposed to the compiler theory, read sections:  
+Below is an explanation of the design. I started this project with zero understanding of compiler and programming langauge theory, and while not perfect, I have considered the consequences of the architecture and the efficiency of implementations. If you are particularly intrested in the software construction and algorithm design, as opposed to the compiler theory, read sections:  
   
 &emsp;&emsp;* Prototyping the Lexer  
 &emsp;&emsp;* Lexing Logic and State Table Construction  
