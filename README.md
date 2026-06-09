@@ -338,10 +338,6 @@ In absolute terms we have extra work from the semantic stack which handles ast n
 
 Semantic actions are triggered during parsing by embedding markers into the parse table. The markers are implemented in several Enums, one for clearly defined type of action. For example, Any marker that corresponds to an action which accepts a list of semantic values and returns an AST node is a member of the `NonTerminalMarkers` Enum. Markers and corresponding actions are bound as key value pairs in the dictionary `parser_markers_to_actions`. The dictionary is better than a switch statment for large grammars, assuming that a larger grammar implies more parser actions. Parser actions use integer indexing to access objects from their input. This is error prone but manageable for this size project. We could implement specific accumulator lists for each action with named access.
 
-### AST Node Organisation
-
-The AST node classes live in `compiler/parser/ast_nodes.py`, separate from the parser machinery in `parser_utils.py`. This separation matters because the two files serve different readers: someone working on the grammar and parse table needs to understand markers, actions, and the dispatch table — the node class definitions are noise at that point. Conversely, the semantic analyser imports node classes directly and has no interest in parsing internals. Keeping them in one 600-line file mixed both concerns.
-
 ## Error Handling
 
 Errors are represented as a hierarchy rooted at `CompilerError` in `compiler/errors.py`. The concrete types are `LexError`, `ParseError`, and `SemanticError`. Each carries an optional `SourcePos`, which is a NamedTuple of `(line, col)` using 1-based indexing to match what a user sees in their editor. A separate `CompilationFailed` exception bundles a list of collected errors for the semantic analysis phase.
