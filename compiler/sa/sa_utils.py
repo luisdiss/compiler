@@ -1,5 +1,5 @@
-from compiler.parser.parser_utils import KeyWordParamNode, ParamNode, ArgNode, KeyWordArgNode, FuncDefNode
-from enum import Enum, auto
+from compiler.parser.ast_nodes import KeyWordParamNode, ArgNode, KeyWordArgNode, FuncDefNode
+from compiler.errors import SemanticError
 from enum import Enum, auto
 from typing import Dict, List, Optional, Any
 
@@ -22,6 +22,7 @@ class SA:
         self.scope_tree: Scope = dummy_scope
         self.node_to_scope: Dict[Any, Scope] = {}
         self.scope_stack: List[Scope] = [dummy_scope]
+        self.errors: List[SemanticError] = []
 
 
 class Scope:
@@ -93,8 +94,8 @@ class ScopeDeclBaseVisitor:
         SA: Reference to the global Semantic Analysis state object.
     """
 
-    def __init__(self, SA: SA) -> None:
-        self.SA: SA = SA
+    def __init__(self, sa: SA) -> None:
+        self.sa: SA = sa
 
     def visit(self, node: Any) -> None:
         """
@@ -103,7 +104,7 @@ class ScopeDeclBaseVisitor:
         Args:
             node: The AST node to visit.
         """
-        self.SA.node_to_scope[node] = self.SA.scope_stack[-1]
+        self.sa.node_to_scope[node] = self.sa.scope_stack[-1]
         methodname: str = "visit_" + node.__class__.__name__
         visit_method = getattr(self, methodname, None)
         if visit_method:
@@ -197,7 +198,7 @@ class ScopeDeclVisitor(ScopeDeclBaseVisitor):
         Returns:
             The Scope object associated with the node.
         """
-        return self.SA.node_to_scope[node]
+        return self.sa.node_to_scope[node]
 
     def enter_scope(self, node: Any) -> None:
         """
@@ -210,15 +211,15 @@ class ScopeDeclVisitor(ScopeDeclBaseVisitor):
             node: The AST node triggering the new scope.
         """
         scope: Scope = Scope()
-        scope.parent = self.SA.scope_tree
-        self.SA.scope_tree = scope
-        self.SA.scope_stack.append(scope)
+        scope.parent = self.sa.scope_tree
+        self.sa.scope_tree = scope
+        self.sa.scope_stack.append(scope)
         if isinstance(node, FuncDefNode):
             scope.func_id_symbol = node.id.symbol
 
     def exit_scope(self) -> None:
         """Pops the current scope from the stack."""
-        self.SA.scope_stack.pop()
+        self.sa.scope_stack.pop()
 
     def check_decl(self, node: Any) -> None:
         """
@@ -234,7 +235,7 @@ class ScopeDeclVisitor(ScopeDeclBaseVisitor):
             curr_scope.symbol_table[id_val] = new_symbol
             node.symbol = new_symbol
         else:
-            print(f"{id_val} already defined in scope")
+            self.sa.errors.append(SemanticError(f"'{id_val}' is already defined in this scope"))
 
     def resolve_id(self, node: Any) -> None:
         """
@@ -246,17 +247,14 @@ class ScopeDeclVisitor(ScopeDeclBaseVisitor):
         Args:
             node: The Expression Identifier AST node.
         """
-        scope: Optional[Scope] = self.SA.node_to_scope[node]
+        scope: Optional[Scope] = self.sa.node_to_scope[node]
         while scope:
             if node.value in scope.symbol_table:
                 node.symbol = scope.symbol_table[node.value]
                 break
             scope = scope.parent
         else:
-            print(f"{node.value} not defined")   
-
-from typing import Dict, List, Optional, Any
-from enum import Enum
+            self.sa.errors.append(SemanticError(f"'{node.value}' is not defined"))
 
 
 class InferenceBaseVisitor:
@@ -270,8 +268,8 @@ class InferenceBaseVisitor:
         SA: Reference to the global Semantic Analysis state object.
     """
 
-    def __init__(self, SA: Any) -> None:
-        self.SA: Any = SA
+    def __init__(self, sa: Any) -> None:
+        self.sa: Any = sa
 
     def visit(self, node: Any) -> Optional[Enum]:
         """
@@ -368,7 +366,7 @@ class InferenceVisitor(InferenceBaseVisitor):
         Args:
             node: The Return AST node.
         """
-        scope: Optional[Any] = self.SA.node_to_scope[node]
+        scope: Optional[Any] = self.sa.node_to_scope[node]
         func_scope: Optional[Any] = scope
 
         while func_scope and not hasattr(func_scope, "func_id_symbol"):
@@ -388,8 +386,7 @@ class InferenceVisitor(InferenceBaseVisitor):
         Returns:
             The inferred type of the argument expression.
         """
-        node.id.symbol.type = self.visit(node.expr)
-        return node.id.symbol.type
+        return self.visit(node.expr)
 
     def visit_AssignNode(self, node: Any) -> Optional[Enum]:
         """
@@ -435,13 +432,13 @@ class InferenceVisitor(InferenceBaseVisitor):
         if left_t == right_t and left_t == Types.number:
             return Types.number
         else:
-            print(
-                f"error: both left and right operands of {node.op.value} "
-                f"must be of type number"
-            )
+            self.sa.errors.append(SemanticError(
+                f"both operands of '{node.op}' must be of type number, "
+                f"got {left_t} and {right_t}"
+            ))
             return None
 
-    def visit_CompOpNode(self, node: Any) -> Optional[Enum]:
+    def visit_ComparisonOpNode(self, node: Any) -> Optional[Enum]:
         """
         Visits a comparison operation node to validate operand types.
 
@@ -449,8 +446,7 @@ class InferenceVisitor(InferenceBaseVisitor):
             node: The Comparison Operation AST node.
 
         Returns:
-            The resulting type (number/bool depending on language spec),
-            or None on error.
+            Types.number when operands are valid, None on error.
         """
         left_t: Optional[Enum] = self.visit(node.left)
         right_t: Optional[Enum] = self.visit(node.right)
@@ -458,10 +454,10 @@ class InferenceVisitor(InferenceBaseVisitor):
         if left_t == right_t and left_t == Types.number:
             return Types.number
         else:
-            print(
-                f"error: both left and right operands of {node.op.value} "
-                f"must be of type number"
-            )
+            self.sa.errors.append(SemanticError(
+                f"both operands of '{node.op}' must be of type number, "
+                f"got {left_t} and {right_t}"
+            ))
             return None
 
     def visit_UnaryOpNode(self, node: Any) -> Optional[Enum]:
@@ -488,15 +484,15 @@ class InferenceVisitor(InferenceBaseVisitor):
         """
         return node.symbol.type
 
-    def visit_NumberNode(self, node: Any) -> Enum:
+    def visit_NumberNode(self, _node: Any) -> Types:
         """Visits a numeric literal node."""
         return Types.number
 
-    def visit_StringNode(self, node: Any) -> Enum:
+    def visit_StringNode(self, _node: Any) -> Types:
         """Visits a string literal node."""
         return Types.string
 
-    def visit_BoolNode(self, node: Any) -> Enum:
+    def visit_BoolNode(self, _node: Any) -> Types:
         """Visits a boolean literal node."""
         return Types.bool
 
@@ -529,11 +525,10 @@ class InferenceVisitor(InferenceBaseVisitor):
                 arg_type: Optional[Enum] = self.visit(arg_node.expr)
                 if param.has_default:
                     if arg_type != default_type:
-                        print(
+                        self.sa.errors.append(SemanticError(
                             f"type mismatch for parameter '{param.id.value}': "
-                        )
-                        print(f"default type {default_type}, ")
-                        print(f"argument type {arg_type}")
+                            f"default is {default_type}, argument is {arg_type}"
+                        ))
                         return
 
                 param.id.symbol.type = arg_type
@@ -554,12 +549,10 @@ class InferenceVisitor(InferenceBaseVisitor):
             arg_type: Optional[Enum] = self.visit(arg_node.expr)
 
             if arg_type != param_id.symbol.type:
-                print(
+                self.sa.errors.append(SemanticError(
                     f"type mismatch for parameter '{param_id.value}': "
-                )
-                print(
                     f"expected {param_id.symbol.type}, got {arg_type}"
-                )
+                ))
 
     def bind_call_arguments(
         self, call_node: Any, symbol: Any
@@ -593,9 +586,10 @@ class InferenceVisitor(InferenceBaseVisitor):
         total_params: int = len(params)
 
         if len(args) + len(kwargs) > total_params:
-            print(
-                f"error: too many arguments in call to {call_node.id.value}"
-            )
+            self.sa.errors.append(SemanticError(
+                f"too many arguments in call to '{call_node.id.value}': "
+                f"expected {total_params}, got {len(args) + len(kwargs)}"
+            ))
 
         # Bind positional args
         for i, arg in enumerate(args):
@@ -606,15 +600,16 @@ class InferenceVisitor(InferenceBaseVisitor):
         for kwarg in kwargs:
             name: str = kwarg.id.value
             if name not in param_map:
-                print(
-                    f"error: unknown parameter '{name}' in call to "
-                    f"{call_node.id.value}"
-                )
+                self.sa.errors.append(SemanticError(
+                    f"unknown parameter '{name}' in call to '{call_node.id.value}'"
+                ))
                 continue
 
             param: Any = param_map[name]
             if param in param_arg_map:
-                print(f"error: parameter '{name}' already bound")
+                self.sa.errors.append(SemanticError(
+                    f"parameter '{name}' is already bound"
+                ))
                 continue
 
             param_arg_map[param] = kwarg
@@ -625,8 +620,8 @@ class InferenceVisitor(InferenceBaseVisitor):
                 if param.has_default:
                     param_arg_map[param] = param.expr
                 else:
-                    print(
-                        f"error: missing required parameter '{param.id.value}'"
-                    )
+                    self.sa.errors.append(SemanticError(
+                        f"missing required argument for parameter '{param.id.value}'"
+                    ))
 
         return param_arg_map  

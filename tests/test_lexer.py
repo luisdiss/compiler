@@ -1,6 +1,7 @@
 import unittest
-from compiler.lexer.lexer  import lexer, LexerError
+from compiler.lexer.lexer import lexer
 from compiler.lexer.token_utils import TokenTypes, keywords
+from compiler.errors import LexError
 from compiler.lexer.raw_state_table import transiton_classes, CharClasses
 
 #tests
@@ -141,11 +142,12 @@ class TestLexer(unittest.TestCase):
         self.assertEqual(tokens, expected)
     
     def test_invalid_character_error(self):
-        with self.assertRaises(LexerError) as context:
+        with self.assertRaises(LexError) as context:
             lexer("invalid@character")
         error = context.exception
-        self.assertEqual(error.position, 7)
-        self.assertEqual(error.char, "@")
+        self.assertIsNotNone(error.pos)
+        self.assertEqual(error.pos.line, 1)
+        self.assertEqual(error.pos.col, 8)
         self.assertIn("Unexpected character", str(error))
     
     def test_mixed_tokens_with_whitespace(self):
